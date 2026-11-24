@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Status: In Love</title>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .terminal {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 25px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .header {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .red { background: #ff5f56; }
+        .yellow { background: #ffbd2e; }
+        .green { background: #27c93f; }
+        h1 { color: #58a6ff; font-size: 1.3em; margin-top: 0; }
+        .status-ok { color: #3fb950; font-weight: bold; }
+        .uptime-box {
+            background: #0d1117;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ff7b72;
+            margin: 15px 0;
+            font-size: 1.1em;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        button {
+            background: #21262d;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.95em;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #30363d;
+            border-color: #ff7b72;
+            color: #ffffff;
+        }
+        #log {
+            margin-top: 15px;
+            font-size: 0.85em;
+            color: #8b949e;
+            min-height: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="terminal">
+    <div class="header">
+        <div class="dot red"></div>
+        <div class="dot yellow"></div>
+        <div class="dot green"></div>
+    </div>
+    <h1>root@heart:~# status --relationship</h1>
+    <p>● Соединение: <span class="status-ok">ACTIVE (стабильно)</span></p>
+    <p>● Потеря пакетов: <span class="status-ok">0%</span></p>
+
+    <div class="uptime-box">
+        <div>System Uptime (мы вместе):</div>
+        <strong id="uptime" style="color: #ff7b72;">Загрузка...</strong>
+    </div>
+
+    <p>Выберите экстренный запрос техподдержке:</p>
+    <div class="buttons">
+        <button onclick="sendAlert('💋 Срочно требуется поцелуй!')">💋 Поцелуй</button>
+        <button onclick="sendAlert('🤗 Требуются обнимашки (приоритет: Critical)')">🤗 Обнимашки</button>
+        <button onclick="sendAlert('🍫 Нужны вкусняшки для поднятия настроения')">🍫 Вкусняшки</button>
+        <button onclick="sendAlert('💆‍♀️ Запрос на массаж спины')">💆‍♀️ Массаж</button>
+    </div>
+    <div id="log">> Ожидание команды...</div>
+</div>
+
+<script>
+    // 1. ДАТА НАЧАЛА ОТНОШЕНИЙ: 26.10.2026, 00:00
+    // Формат JS: new Date(год, месяц_с_нуля, день, часы, минуты, секунды)
+    // Октябрь = 9
+    const startDate = new Date(2026, 9, 26, 0, 0, 0);
+
+    // 2. ДАННЫЕ TELEGRAM-БОТА
+    const BOT_TOKEN = '9185352137:AAFiTi7qiFmGjsKrX0ZB6Ia7aSoROEhr2R8';
+    const CHAT_ID = '8825227717';
+
+    function updateUptime() {
+        const now = new Date();
+        const diff = now - startDate;
+
+        if (diff < 0) {
+            document.getElementById('uptime').innerText = 'Ещё не запущено... но скоро ❤️';
+            return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const mins = Math.floor((diff / 1000 / 60) % 60);
+        const secs = Math.floor((diff / 1000) % 60);
+
+        document.getElementById('uptime').innerText =
+            `${days} дн. ${hours} ч. ${mins} мин. ${secs} сек.`;
+    }
+
+    setInterval(updateUptime, 1000);
+    updateUptime();
+
+    function sendAlert(message) {
+        const log = document.getElementById('log');
+        log.innerText = '> Отправка тикета в техподдержку...';
+
+        const text = encodeURIComponent('🚨 Новый тикет от любимой:\n' + message);
+        const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${text}`;
+
+        fetch(url)
+            .then(response => {
+                if (response.ok) {
+                    log.innerHTML = '<span style="color:#3fb950;">> Тикет принят! Админ уже спешит на помощь ❤️</span>';
+                } else {
+                    log.innerText = '> Ошибка отправки. Проверьте токен бота и CHAT_ID.';
+                }
+            })
+            .catch(() => {
+                log.innerText = '> Ошибка сети.';
+            });
+    }
+</script>
+
+</body>
+</html>
